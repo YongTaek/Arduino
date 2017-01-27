@@ -13,19 +13,21 @@
     <LinearLayout
         android:id="@+id/text_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
         android:layout_above="@+id/btn_layout">
-        <EditText
-            android:id="@+id/receive_text"
+        <com.zerokol.views.JoystickView
+            android:id="@+id/joystick"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1" />
-        <EditText
-            android:id="@+id/send_text"
+            android:layout_weight="1"
+            />
+        <com.zerokol.views.JoystickView
+            android:id="@+id/joystick2"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            />
     </LinearLayout>
 
     <LinearLayout

@@ -19,6 +19,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.zerokol.views.JoystickView;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -26,6 +28,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+
+import static com.zerokol.views.JoystickView.*;
 
 public class MainActivity extends AppCompatActivity {
     final public int REQUEST_ENABLE_BT = 1;
@@ -40,9 +44,7 @@ public class MainActivity extends AppCompatActivity {
     char mDelimiter = '\n';
     int readBufferPosition;
     byte[] readBuffer;
-    EditText editText, sendText;
-    Button sendBtn, clearBtn;
-
+    JoystickView[] joystickViews;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,24 +52,10 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-        sendText = (EditText) findViewById(R.id.send_text);
-        editText = (EditText) findViewById(R.id.receive_text);
-        sendBtn = (Button) findViewById(R.id.send_btn);
-        clearBtn = (Button) findViewById(R.id.clear_btn);
-        clearBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                editText.setText("");
-            }
-        });
+        joystickViews = new JoystickView[2];
+        joystickViews[0] = (JoystickView) findViewById(R.id.joystick);
+        joystickViews[1] = (JoystickView) findViewById(R.id.joystick2);
+
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (mBluetoothAdapter != null) {
             if (!mBluetoothAdapter.isEnabled()) {
@@ -142,13 +130,19 @@ public class MainActivity extends AppCompatActivity {
                     finish();
                 } else {
                     connectToSelectedDevices(items[which].toString());
-                    sendBtn.setOnClickListener(new View.OnClickListener() {
+                    joystickViews[0].setOnJoystickMoveListener(new OnJoystickMoveListener() {
                         @Override
-                        public void onClick(View v) {
-                            sendData(sendText.getText().toString());
-                            sendText.setText("");
+                        public void onValueChanged(int i, int i1, int i2) {
+                            sendData(i1 + "");
+
                         }
-                    });
+                    }, JoystickView.DEFAULT_LOOP_INTERVAL);
+                    joystickViews[1].setOnJoystickMoveListener(new OnJoystickMoveListener() {
+                        @Override
+                        public void onValueChanged(int i, int i1, int i2) {
+                            sendData(i + "");
+                        }
+                    },JoystickView.DEFAULT_LOOP_INTERVAL);
                 }
             }
         });
@@ -211,7 +205,7 @@ public class MainActivity extends AppCompatActivity {
                                     handler.post(new Runnable() {
                                         @Override
                                         public void run() {
-                                            editText.setText(data);
+
                                         }
                                     });
                                 } else {
